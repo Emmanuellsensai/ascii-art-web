@@ -1,5 +1,7 @@
 # ascii-art-web — Complete Beginner's Guide
 
+
+
 > A web-based ASCII art generator built in Go. Type text in a browser, pick a font, get big ASCII art.
 
 ---
