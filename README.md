@@ -1,220 +1,497 @@
-# ascii-art-web
+# ASCII Art Web
 
-A web-based ASCII art generator built in Go. Type any text in the browser, choose a font style, and the server renders it as large ASCII art characters.
-
----
-
-## Description
-
-This project takes the core ascii-art rendering logic and wraps it in a web server. The user interacts through a webpage — no terminal required. The server handles form submissions, renders the ASCII art using the chosen font, and sends the result back to the browser.
+A web application built with **Go (Golang)** that converts user input text into **ASCII art** using different banner styles.
 
 ---
 
-## Authors
+## 📌 Project Purpose
 
-- Emmanuel ([@emmanuellsensai](https://github.com/emmanuellsensai))
+This project is designed to help you understand:
 
----
+* How to build a **web server in Go**
+* How to handle **HTTP requests (GET & POST)**
+* How to use **HTML templates**
+* How to process user input and generate dynamic output
+* How ASCII art works internally
 
-## Usage
+👉 In simple terms:
 
-**1. Clone the project**
-```bash
-git clone <your-repo-url>
-cd ascii-art-web
 ```
-
-**2. Make sure the banner files are in the banners/ folder**
-```
-banners/
-├── standard.txt
-├── shadow.txt
-└── thinkertoy.txt
-```
-
-**3. Run the server**
-```bash
-go run .
-```
-
-**4. Open your browser and go to**
-```
-http://localhost:8080
-```
-
-**5. Use the page**
-- Type your text in the input box
-- Pick a banner style (standard, shadow, or thinkertoy)
-- Click Generate
-- The ASCII art appears below the form
-
-**To use a new line in your art, type `\n` in the text box:**
-```
-Hello\nWorld
+User types text → Server processes it → ASCII art is generated → Displayed in browser
 ```
 
 ---
 
-## Project Structure
+## 🚀 How the Application Works
+
+```
+Browser → HTTP Request → Go Server → ASCII Logic → HTML Template → Browser
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 ascii-art-web/
-├── main.go               ← HTTP server, routes, handlers
-├── go.mod                ← module declaration
-├── ascii/
-│   └── render.go         ← core rendering logic (unchanged from ascii-art)
+│
+├── ascii/              # ASCII generation logic
+├── banners/            # ASCII font files
 ├── templates/
-│   └── index.html        ← the webpage the user sees
-└── banners/
-    ├── standard.txt      ← standard font
-    ├── shadow.txt        ← shadow font
-    └── thinkertoy.txt    ← thinkertoy font
+│   └── index.html      # Frontend UI
+│
+├── main.go             # Backend logic
+├── go.mod
+└── README.md
 ```
 
 ---
 
-## Implementation Details
+# 🧠 `main.go` — FULL Line-by-Line Explanation
 
-### How the Server Works
+---
 
-The server uses Go's built-in `net/http` package — no external frameworks needed.
+## 📦 Package Declaration
 
-Two routes are registered:
+```go
+package main
+```
 
-| Route | Method | What it does |
-|---|---|---|
-| `/` | GET | Serves the main HTML page |
-| `/ascii-art` | POST | Receives form data, renders art, returns result |
+* Defines the main package
+* Required for executable Go programs
+
+---
+
+## 📥 Imports
+
+```go
+import (
+    "ascii-art-web/ascii"
+    "html/template"
+    "log"
+    "net/http"
+)
+```
+
+* `ascii-art-web/ascii` → your custom ASCII logic
+* `html/template` → renders HTML pages
+* `log` → prints messages to terminal
+* `net/http` → handles web server and requests
+
+---
+
+## 📊 Struct Definition
+
+```go
+type PageData struct {
+    Result string
+    Error  string
+    Text   string
+    Banner string
+}
+```
+
+This struct is used to send data from Go → HTML.
+
+| Field  | Purpose               |
+| ------ | --------------------- |
+| Result | ASCII output          |
+| Error  | Error message         |
+| Text   | Keeps user input      |
+| Banner | Keeps selected option |
+
+---
+
+## 📄 Load Template
+
+```go
+var tmpl = template.Must(template.ParseFiles("templates/index.html"))
+```
+
+* Loads the HTML file once when the app starts
+* `ParseFiles` reads the file
+* `Must` crashes the app if loading fails
+
+---
+
+## 🚀 Main Function
+
+```go
+func main() {
+```
+
+Program entry point.
+
+---
+
+### Register Routes
 
 ```go
 http.HandleFunc("/", homeHandler)
-http.HandleFunc("/ascii-art", asciiArtHandler)
-http.ListenAndServe(":8080", nil)
 ```
 
-**Learn more:** https://gowebexamples.com/hello-world/
+* Handles homepage `/`
 
 ---
 
-### How the Template Works
-
-Go's `html/template` package lets us write HTML files with placeholders that Go fills in at runtime.
-
 ```go
-// load the template once at startup
-var tmpl = template.Must(template.ParseFiles("templates/index.html"))
-
-// send data to the template
-tmpl.Execute(w, PageData{Result: result})
+http.HandleFunc("/ascii-art", asciiArtHandler)
 ```
 
-In the HTML file, `{{.Result}}` is replaced by the actual ASCII art string:
+* Handles form submission
+
+---
+
+### Start Server
+
+```go
+log.Println("Server running at http://localhost:8080\nCheck your browser on this port")
+```
+
+* Prints server status in terminal
+
+---
+
+```go
+log.Fatal(http.ListenAndServe(":8080", nil))
+```
+
+* Starts server on port 8080
+* Stops program if error occurs
+
+---
+
+# 🏠 Home Handler
+
+```go
+func homeHandler(w http.ResponseWriter, r *http.Request)
+```
+
+Handles requests to `/`.
+
+---
+
+```go
+if r.URL.Path != "/"
+```
+
+* Ensures only exact `/` is allowed
+* Prevents invalid URLs
+
+---
+
+```go
+if r.Method != http.MethodGet
+```
+
+* Only allows GET requests
+
+---
+
+```go
+err := tmpl.Execute(w, PageData{})
+```
+
+* Sends empty page (no result yet)
+
+---
+
+```go
+if err != nil
+```
+
+* Handles template errors
+
+---
+
+# 🎯 ASCII Handler
+
+```go
+func asciiArtHandler(w http.ResponseWriter, r *http.Request)
+```
+
+Handles form submission.
+
+---
+
+```go
+if r.Method != http.MethodPost
+```
+
+* Only allows POST requests
+
+---
+
+```go
+text := r.FormValue("text")
+banner := r.FormValue("banner")
+```
+
+* Retrieves user input from form
+
+---
+
+```go
+if text == "" || banner == ""
+```
+
+* Ensures user entered data
+
+---
+
+```go
+allowed := map[string]bool{"standard": true, "shadow": true, "thinkertoy": true}
+```
+
+* Defines valid banner styles
+
+---
+
+```go
+if !allowed[banner]
+```
+
+* Prevents invalid banner input
+
+---
+
+```go
+bannerLines, err := ascii.ReadBanner("banners/" + banner + ".txt")
+```
+
+* Loads ASCII font file
+
+---
+
+```go
+asciiMap := ascii.BuildAsciiMap(bannerLines)
+```
+
+* Converts file into character map
+
+---
+
+```go
+result := ascii.PrintAscii(text, asciiMap)
+```
+
+* Generates ASCII output
+
+---
+
+```go
+tmpl.Execute(w, PageData{
+    Result: result,
+    Text:   text,
+    Banner: banner,
+})
+```
+
+* Sends data back to HTML
+* Preserves user input (important fix you implemented)
+
+---
+
+```go
+if err != nil
+```
+
+⚠️ Minor issue:
+
+* This `err` refers to the earlier variable
+* You should capture error from `Execute` again for accuracy
+
+---
+
+# 🌐 `index.html` — FULL Line-by-Line Explanation
+
+---
+
+## 📄 Document Setup
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+```
+
+* Defines HTML5 document
+* Sets language
+
+---
+
+## 🧠 Head Section
+
+```html
+<meta charset="UTF-8">
+```
+
+* Supports all characters
+
+```html
+<title>ASCII Art Generator</title>
+```
+
+* Page title
+
+---
+
+
+```html
+<body style="text-align: center;">
+```
+
+---
+
+## 🏷️ Title
+
+```html
+<h1>ASCII Art Generator</h1>
+```
+
+* Displays page heading
+
+---
+
+## 📝 Form
+
+```html
+<form action="/ascii-art" method="POST">
+```
+
+* Sends data to server
+
+---
+
+## ✏️ Text Input
+
+```html
+<textarea ...>{{.Text}}</textarea>
+```
+
+* User enters text
+* `{{.Text}}` preserves input after submission
+
+---
+
+## 🎛️ Banner Selection
+
+```html
+<input type="radio" name="banner" value="standard"
+{{if eq .Banner "standard"}}checked{{end}}>
+```
+
+* Lets user select banner
+* Keeps selected option after submit
+
+---
+
+## 📦 Flexbox Layout
+
+```html
+<div class="banner" style="display: flex; align-items: center; justify-content: center;">
+```
+
+* Centers radio buttons horizontally
+
+---
+
+## 🔘 Button
+
+```html
+<button type="submit">Generate</button>
+```
+
+* Submits form
+
+---
+
+## ⚠️ Minor HTML Issue
+
+```html
+</div>
+```
+
+* Extra closing div (not opened properly)
+
+---
+
+## 📤 Result Section
+
+```html
+{{if .Result}}
+```
+
+* Only shows result if available
+
+---
 
 ```html
 <pre>{{.Result}}</pre>
 ```
 
-The `<pre>` tag preserves all spaces and newlines — essential for ASCII art to display correctly.
-
-**Learn more:** https://gowebexamples.com/templates/
+* Displays ASCII art
+* `<pre>` preserves spacing (very important)
 
 ---
 
-### How the Form Works
-
-The HTML form sends data to the server when the user clicks Generate:
+## ❌ Error Section
 
 ```html
-<form action="/ascii-art" method="POST">
-    <textarea name="text"></textarea>
-    <input type="radio" name="banner" value="standard">
-    <button type="submit">Generate</button>
-</form>
+{{if .Error}}
 ```
 
-- `action="/ascii-art"` — where the form sends the data
-- `method="POST"` — how it sends it
-- `name="text"` — Go reads this with `r.FormValue("text")`
-- `name="banner"` — Go reads this with `r.FormValue("banner")`
-
-**Learn more:** https://gowebexamples.com/forms/
+* Displays errors
 
 ---
 
-### How Form Data is Read in Go
 
-```go
-text   := r.FormValue("text")
-banner := r.FormValue("banner")
+```html
+<div class="result" style="text-align: justify;">
 ```
-
-The `name` attribute in the HTML must match exactly what you pass to `r.FormValue`.
 
 ---
 
-### How the ASCII Art is Rendered
+# 🔤 ASCII Logic Summary
 
-The core rendering logic is unchanged from the original ascii-art project:
-
-**Step 1 — ReadBanner:** reads the `.txt` font file and splits it into lines
-
-**Step 2 — BuildAsciiMap:** organises the lines into a lookup table where each character maps to its 8 art rows
-
-**Step 3 — PrintAscii:** loops through the input text, looks up each character, and builds the final art string row by row
-
-```go
-bannerLines, err := ascii.ReadBanner("banners/" + banner + ".txt")
-asciiMap := ascii.BuildAsciiMap(bannerLines)
-result := ascii.PrintAscii(text, asciiMap)
-```
-
-**The formula that finds any character in the font file:**
-```
-position = (ASCII value of character - 32) * 9 + 1 + current row
-```
-
-Space is ASCII 32 and is the first character in the file. Every character after it is 9 lines further (8 art rows + 1 blank separator).
+* Each character = 8 lines
+* Stored in banner files
+* Converted into map
+* Printed line-by-line
 
 ---
 
-### HTTP Status Codes
+## ▶️ How to Run
 
-The server returns the correct status code for every situation:
+```bash
+git clone https://github.com/Emmanuellsensai/ascii-art-web.git
+cd ascii-art-web
+go run main.go
+```
 
-| Situation | Code | How |
-|---|---|---|
-| Page loads fine | 200 | Automatic |
-| Art rendered fine | 200 | Automatic |
-| Unknown URL | 404 | `http.Error(w, "...", http.StatusNotFound)` |
-| Banner file missing | 404 | `http.Error(w, "...", http.StatusNotFound)` |
-| Empty or missing form fields | 400 | `http.Error(w, "...", http.StatusBadRequest)` |
-| Invalid banner name | 400 | `http.Error(w, "...", http.StatusBadRequest)` |
-| Template fails to render | 500 | `http.Error(w, "...", http.StatusInternalServerError)` |
+Open:
 
-**Learn more:** https://gowebexamples.com/http-status-codes/
+```
+http://localhost:8080
+```
 
 ---
 
-### Allowed Packages
+## 📚 Resources
 
-Only Go standard library packages are used:
-
-| Package | Used for |
-|---|---|
-| `net/http` | HTTP server, handlers, status codes |
-| `html/template` | Rendering HTML templates with Go data |
-| `os` | Reading banner files from disk |
-| `strings` | Splitting and building strings |
+* Go Docs → https://golang.org/doc/
+* net/http → https://pkg.go.dev/net/http
+* html/template → https://pkg.go.dev/html/template
+* ASCII Art → https://en.wikipedia.org/wiki/ASCII_art
 
 ---
 
-## Learning Resources
+## 👨‍💻 Author
 
-| Topic | Resource |
-|---|---|
-| Everything in one place | https://gowebexamples.com/ |
-| HTTP server basics | https://gowebexamples.com/hello-world/ |
-| Templates | https://gowebexamples.com/templates/ |
-| Forms | https://gowebexamples.com/forms/ |
-| Status codes | https://gowebexamples.com/http-status-codes/ |
-| Official Go web tutorial | https://go.dev/doc/articles/wiki/ |
+**Emmanuel Usang**
+https://github.com/Emmanuellsensai
+
+---
+
+## 📄 License
+
+Open-source and for educational purposes.
