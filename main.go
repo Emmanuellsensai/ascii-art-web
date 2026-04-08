@@ -26,7 +26,7 @@ func main() {
 
 	// start the server
 	log.Println("Server running at http://localhost:8080\nCheck your browser on this port")
-	err := http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":8081", mux)
 	log.Fatal(err)
 }
 
@@ -94,7 +94,4 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 		Banner: banner,
 	})
 
-	if err != nil {
-		http.Error(w, "500 - Internal Server Error", http.StatusInternalServerError)
-	}
 }
