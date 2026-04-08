@@ -7,7 +7,6 @@
 </head>
 
 
-
 <body style="text-align: center;"></body>
 
 
@@ -18,8 +17,7 @@
 <form action="/ascii-art" method="POST">
 
     <label for="text"><b>Enter your text:</b></label><br>
-    <textarea id="text" name="text" rows="4" cols="50" placeholder="Type something... use \n for a new line"
-        required>{{.Text}}</textarea>
+    <textarea id="text" name="text" rows="4" cols="50" placeholder="Type something...">{{.Text}}</textarea>
 
     <br><br>
     <label><b>Choose a banner style:</b></label><br>
@@ -40,7 +38,6 @@
 </form>
 
 <div class="result" style="text-align: justify;">
-
     {{if .Result}}
     <h2>Result:</h2>
     <pre>{{.Result}}</pre>
@@ -50,6 +47,8 @@
     <p>{{.Error}}</p>
     {{end}}
 </div>
+
+
 
 </body>
 

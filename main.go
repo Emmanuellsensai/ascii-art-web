@@ -19,13 +19,15 @@ type PageData struct {
 var tmpl = template.Must(template.ParseFiles("templates/index.html"))
 
 func main() {
+	mux := http.NewServeMux()
 	// register our two routes
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/ascii-art", asciiArtHandler)
+	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/ascii-art", asciiArtHandler)
 
 	// start the server
 	log.Println("Server running at http://localhost:8080\nCheck your browser on this port")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	err := http.ListenAndServe(":8080", mux)
+	log.Fatal(err)
 }
 
 // homeHandler handles GET / — shows the main page
