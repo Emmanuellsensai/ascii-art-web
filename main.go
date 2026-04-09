@@ -10,7 +10,6 @@ import (
 // PageData holds what we send to the HTML template
 type PageData struct {
 	Result string
-	Error  string
 	Text   string
 	Banner string
 }
@@ -36,6 +35,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	err := tmpl.Execute(w, PageData{})
 	if err != nil {
 		http.Error(w, "500 - Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -76,11 +76,14 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	result := ascii.PrintAscii(text, asciiMap)
 
 	// send the result back to the page
-	tmpl.Execute(w, PageData{
+	err = tmpl.Execute(w, PageData{
 		Result: result,
 		Text:   text,
 		Banner: banner,
 	})
+	if err != nil {
+		http.Error(w, "500 - Internal Server Error", http.StatusInternalServerError)
+	}
 
 }
 
