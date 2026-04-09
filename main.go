@@ -18,18 +18,6 @@ type PageData struct {
 // templates are loaded once at startup
 var tmpl = template.Must(template.ParseFiles("templates/index.html"))
 
-func main() {
-	mux := http.NewServeMux()
-	// register our two routes
-	mux.HandleFunc("/", homeHandler)
-	mux.HandleFunc("/ascii-art", asciiArtHandler)
-
-	// start the server
-	log.Println("Server running at http://localhost:8080\nCheck your browser on this port")
-	err := http.ListenAndServe(":8080", mux)
-	log.Fatal(err)
-}
-
 // homeHandler handles GET / — shows the main page
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// reject any path other than "/"
@@ -94,4 +82,16 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 		Banner: banner,
 	})
 
+}
+
+func main() {
+	mux := http.NewServeMux()
+	// register our two routes
+	mux.HandleFunc("GET /{$}", homeHandler)
+	mux.HandleFunc("/ascii-art", asciiArtHandler)
+
+	// start the server
+	log.Println("Server running at http://localhost:8080\nCheck your browser on this port")
+	err := http.ListenAndServe(":8080", mux)
+	log.Fatal(err)
 }
