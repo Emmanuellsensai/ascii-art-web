@@ -92,6 +92,7 @@ Each banner file defines characters 32 (space) through 126 (~) in ASCII order. E
 ## Author
 
 **Emmanuel Usang** — [GitHub](https://github.com/Emmanuellsensai)
+**Emmanuel Oyelade** — [GitHub](https://github.com/oyehimar-bot)
 
 ## License
 
