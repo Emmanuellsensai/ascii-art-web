@@ -7,46 +7,44 @@
 </head>
 
 
-<body style="text-align: center;"></body>
+<body style="text-align: center;">
+
+    <h1>ASCII Art Generator</h1>
 
 
+    <form action="/ascii-art" method="POST">
 
-<h1>ASCII Art Generator</h1>
+        <label for="text"><b>Enter your text:</b></label><br>
+        <textarea id="text" name="text" row="4" cols="50" placeholder="Type something...">{{.Text}}</textarea>
 
-
-<form action="/ascii-art" method="POST">
-
-    <label for="text"><b>Enter your text:</b></label><br>
-    <textarea id="text" name="text" row="4" cols="50" placeholder="Type something...">{{.Text}}</textarea>
-
-    <br><br>
-    <label><b>Choose a banner style:</b></label><br>
-    <div class="banner" style="display: flex; align-items: center; justify-content: center;">
-
-        <label><input type="radio" name="banner" value="standard" {{if eq .Banner "standard" }}checked{{end}}>
-            Standard</label><br>
-        <label><input type="radio" name="banner" value="shadow" {{if eq .Banner "shadow" }}checked{{end}}>
-            Shadow</label><br>
-        <label><input type="radio" name="banner" value="thinkertoy" {{if eq .Banner "thinkertoy" }}checked{{end}}>
-            Thinkertoy</label><br>
         <br><br>
+        <label><b>Choose a banner style:</b></label><br>
+        <div class="banner" style="display: flex; align-items: center; justify-content: center;">
+
+            <label><input type="radio" name="banner" value="standard" {{if eq .Banner "standard" }}checked{{end}}>
+                Standard</label><br>
+            <label><input type="radio" name="banner" value="shadow" {{if eq .Banner "shadow" }}checked{{end}}>
+                Shadow</label><br>
+            <label><input type="radio" name="banner" value="thinkertoy" {{if eq .Banner "thinkertoy" }}checked{{end}}>
+                Thinkertoy</label><br>
+            <br><br>
+        </div>
+
+
+        <button type="submit">Generate</button>
+
+    </form>
+
+    <div class="result" style="text-align: justify;">
+        {{if .Result}}
+        <h2>Result:</h2>
+        <pre>{{.Result}}</pre>
+        {{end}}
+
+        {{if .Error}}
+        <p>{{.Error}}</p>
+        {{end}}
     </div>
-
-
-    <button type="submit">Generate</button>
-
-</form>
-
-<div class="result" style="text-align: justify;">
-    {{if .Result}}
-    <h2>Result:</h2>
-    <pre>{{.Result}}</pre>
-    {{end}}
-
-    {{if .Error}}
-    <p>{{.Error}}</p>
-    {{end}}
-</div>
 
 
 

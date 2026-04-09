@@ -26,7 +26,7 @@ func main() {
 
 	// start the server
 	log.Println("Server running at http://localhost:8080\nCheck your browser on this port")
-	err := http.ListenAndServe(":8081", mux)
+	err := http.ListenAndServe(":8080", mux)
 	log.Fatal(err)
 }
 
