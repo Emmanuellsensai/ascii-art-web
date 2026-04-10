@@ -27,7 +27,7 @@ func BuildAsciiMap(lines []string) map[rune][]string {
 func PrintAscii(text string, asciiMap map[rune][]string) string {
 	var result strings.Builder
 
-	for i, line := range strings.Split(text, "\r\n") {
+	for i, line := range strings.Split(text, "\\n") {
 		if line == "" {
 			if i != 0 {
 				result.WriteString("\n")
