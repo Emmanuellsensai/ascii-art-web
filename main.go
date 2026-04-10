@@ -3,26 +3,19 @@ package main
 import (
 	"ascii-art-web/ascii"
 	"html/template"
+	"log"
 	"net/http"
 )
 
 // PageData holds what we send to the HTML template
 type PageData struct {
 	Result string
-	Error  string
+	Text   string
+	Banner string
 }
 
 // templates are loaded once at startup
 var tmpl = template.Must(template.ParseFiles("templates/index.html"))
-
-func main() {
-	// register our two routes
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/ascii-art", asciiArtHandler)
-
-	// start the server
-	http.ListenAndServe(":8080", nil)
-}
 
 // homeHandler handles GET / — shows the main page
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +35,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	err := tmpl.Execute(w, PageData{})
 	if err != nil {
 		http.Error(w, "500 - Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -82,8 +76,25 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	result := ascii.PrintAscii(text, asciiMap)
 
 	// send the result back to the page
-	err = tmpl.Execute(w, PageData{Result: result})
+	err = tmpl.Execute(w, PageData{
+		Result: result,
+		Text:   text,
+		Banner: banner,
+	})
 	if err != nil {
 		http.Error(w, "500 - Internal Server Error", http.StatusInternalServerError)
 	}
+
+}
+
+func main() {
+	mux := http.NewServeMux()
+	// register our two routes
+	mux.HandleFunc("GET /{$}", homeHandler)
+	mux.HandleFunc("/ascii-art", asciiArtHandler)
+
+	// start the server
+	log.Println("Server running at http://localhost:8080\nCheck your browser on this port")
+	err := http.ListenAndServe(":8080", mux)
+	log.Fatal(err)
 }

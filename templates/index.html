@@ -11,15 +11,19 @@
             max-width: 800px;
             margin: 40px auto;
             padding: 0 20px;
-            background: #f5f5f5;
+            background: #00f7ff;
         }
 
         h1 {
-            color: #333;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
         }
 
         form {
-            background: white;
+            background: rgb(0, 0, 0);
             padding: 24px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -29,7 +33,7 @@
             display: block;
             margin-bottom: 6px;
             font-weight: bold;
-            color: #555;
+            color: #fff8f8;
         }
 
         textarea {
@@ -74,7 +78,7 @@
 
         .result-box {
             margin-top: 32px;
-            background: white;
+            background: rgb(0, 0, 0);
             padding: 24px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -82,7 +86,7 @@
 
         pre {
             background: #ffffff;
-            color: #000000;
+            color: rgb(0, 0, 0);
             padding: 20px;
             border-radius: 4px;
             overflow-x: auto;
@@ -92,48 +96,40 @@
     </style>
 </head>
 
-<body>
+<body style="text-align: center;">
 
     <h1>ASCII Art Generator</h1>
 
     <form action="/ascii-art" method="POST">
 
-        <label for="text">Enter your text:</label>
-        <textarea id="text" name="text" placeholder="Type something... use \n for a new line" required></textarea>
+        <!-- Preserves the user's text after form submission -->
+        <label for="text"><b>Enter your text:</b></label><br>
+        <textarea id="text" name="text" row="4" cols="50" placeholder="Type something...">{{.Text}}</textarea>
 
-        <label style="margin-top: 16px;">Choose a banner style:</label>
-        <div class="banners">
-            <label>
-                <input type="radio" name="banner" value="standard" checked>
-                Standard
-            </label>
-            <label>
-                <input type="radio" name="banner" value="shadow">
-                Shadow
-            </label>
-            <label>
-                <input type="radio" name="banner" value="thinkertoy">
-                Thinkertoy
-            </label>
+        <br><br>
+        <label><b>Choose a banner style:</b></label><br>
+        <div class="banner" style="display: flex; align-items: center; justify-content: center;">
+
+            <!-- Keeps the selected radio button checked after submission -->
+            <label><input type="radio" name="banner" value="standard" {{if eq .Banner "standard" }}checked{{end}}>
+                Standard</label><br>
+            <label><input type="radio" name="banner" value="shadow" {{if eq .Banner "shadow" }}checked{{end}}>
+                Shadow</label><br>
+            <label><input type="radio" name="banner" value="thinkertoy" {{if eq .Banner "thinkertoy" }}checked{{end}}>
+                Thinkertoy</label><br>
+            <br><br>
         </div>
 
         <button type="submit">Generate</button>
 
     </form>
 
-    {{if .Result}}
-    <div class="result-box">
+    <div class="result" style="text-align: justify;">
+        {{if .Result}}
         <h2>Result:</h2>
         <pre>{{.Result}}</pre>
+        {{end}}
     </div>
-    {{end}}
-
-    {{if .Error}}
-    <div class="result-box">
-        <p style="color: rgb(255, 0, 0);">{{.Error}}</p>
-    </div>
-    {{end}}
-
 </body>
 
 </html>
